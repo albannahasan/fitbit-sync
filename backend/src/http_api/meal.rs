@@ -2,11 +2,15 @@ use crate::{
     app_state::AppState,
     http_api::error::ApiError,
     meals::{
-        CreateMealInput,
-        service::{LoggedMeal, save_meal},
+        CreateMealInput, MealsPage, MealsQuery,
+        service::{LoggedMeal, get_meals, save_meal},
     },
 };
-use axum::{Json, extract::State, http::StatusCode};
+use axum::{
+    Json,
+    extract::{Query, State},
+    http::StatusCode,
+};
 
 pub async fn create_meal(
     State(app_state): State<AppState>,
@@ -18,4 +22,15 @@ pub async fn create_meal(
         .await
         .map_err(|_| ApiError::Internal)?;
     return Ok((StatusCode::CREATED, Json(meal)));
+}
+
+pub async fn list_meals(
+    State(app_state): State<AppState>,
+    Query(query): Query<MealsQuery>,
+) -> Result<Json<MealsPage>, ApiError> {
+    let meals = get_meals(&app_state.db, query)
+        .await
+        .map_err(|_| ApiError::Internal)?;
+
+    Ok(Json(meals))
 }

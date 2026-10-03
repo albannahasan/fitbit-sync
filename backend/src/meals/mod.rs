@@ -1,5 +1,6 @@
 use chrono::{DateTime, FixedOffset};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 pub mod service;
 
@@ -18,6 +19,35 @@ pub struct CreateMealInput {
     pub fat_g: Option<f64>,
     pub fiber_g: Option<f64>,
     pub confidence: Option<f64>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct MealsQuery {
+    //Cursor
+    pub cursor: Option<String>,
+    pub limit: Option<i32>,
+}
+
+#[derive(Debug, Serialize, sqlx::FromRow)]
+pub struct Meal {
+    //Meal data
+    pub id: Uuid,
+    pub name: String,
+    pub energy_kcal: i32,
+    pub eaten_at: DateTime<FixedOffset>,
+    pub meal_type: Option<String>,
+    pub protein_g: Option<f64>,
+    pub carbohydrate_g: Option<f64>,
+    pub fat_g: Option<f64>,
+    pub fiber_g: Option<f64>,
+    pub confidence: Option<f64>,
+}
+
+#[derive(Debug, Serialize)]
+
+pub struct MealsPage {
+    pub meals: Vec<Meal>,
+    pub next_cursor: Option<String>,
 }
 
 impl CreateMealInput {

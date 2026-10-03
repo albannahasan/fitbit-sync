@@ -26,6 +26,7 @@ async fn main() {
         .route("/health/live", get(http_api::health::live))
         .route("/health/ready", get(http_api::health::ready))
         .route("/meals", post(http_api::meal::create_meal))
+        .route("/meals", get(http_api::meal::list_meals))
         .with_state(app_state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
